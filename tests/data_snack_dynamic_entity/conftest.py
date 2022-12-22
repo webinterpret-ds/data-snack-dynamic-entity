@@ -8,7 +8,7 @@ def entity_templates() -> Dict:
         'Car': {
             'properties': {
                 'name': {'type': 'str'},
-                'usage': {'type': 'int'},
+                'usage': {'type': 'int', 'optional': True},
                 'cost': {'type': 'float', 'default': 0.0}
             }
         }

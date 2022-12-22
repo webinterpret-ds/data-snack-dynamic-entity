@@ -16,8 +16,9 @@ First you need to define a dictionary containing the template - a configuration 
 Template should contain:
 - the name of the new Entity type and its properties
 - each property should have:
-  - its type 
-  - default value (optionally) 
+  - `type` - type of the field
+  - `default` - default value (optional property) 
+  - `optional` - true if the field is optional (optional property)
 
 Notice that your template can be saved in any file of your choosing.
 Just make sure it's later parsed to a dictionary in the right format.
@@ -34,7 +35,8 @@ The template is defined using following schema: `src/data_snack_dynamic_entity/e
             },
             "cost": {
                 "type": "float",
-                "default": 10.0
+                "default": 10.0,
+                "optional": True
             }
         }
     }

@@ -16,6 +16,9 @@
                 },
                 "default": {
                   "type": ["string", "number", "boolean"]
+                },
+                "optional": {
+                  "type": "boolean"
                 }
               },
               "required": [

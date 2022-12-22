@@ -1,6 +1,6 @@
 from dataclasses import make_dataclass, field
 from data_snack.entities import Entity
-from typing import Type, Text, Dict
+from typing import Type, Text, Dict, Optional
 
 from .validate import validate_entity_templates
 
@@ -16,6 +16,8 @@ def _create_entity(entity_name: Text, entity_schema: Dict) -> Entity:
     fields = []
     for field_name, field_schema in entity_schema['properties'].items():
         field_type = _gettype(field_schema['type'])
+        if field_schema.get('optional'):
+            field_type = Optional[field_type]
         if 'default' in field_schema:
             fields.append((field_name, field_type, field(default=field_schema['default'])))
         else:

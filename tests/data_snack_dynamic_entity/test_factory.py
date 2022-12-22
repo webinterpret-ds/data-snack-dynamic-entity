@@ -1,6 +1,16 @@
-from typing import Dict, Type
+from typing import Dict, Type, Union, get_origin, get_args
 
 from data_snack_dynamic_entity import load_entities
+
+
+def _is_optional(field_type: Type) -> bool:
+    """
+    According to https://stackoverflow.com/questions/56832881/check-if-a-field-is-typing-optional
+    this checks if field is Optional
+    :param field_type: type of the field
+    :returns: true if field is Optional
+    """
+    return get_origin(field_type) is Union and type(None) in get_args(field_type)
 
 
 def test_load_entities(entity_templates: Dict) -> None:
@@ -12,7 +22,9 @@ def test_load_entities(entity_templates: Dict) -> None:
     assert len(entities) == 1
 
     Car = entities['Car']
-    assert isinstance(Car, Type)
+    assert _is_optional(Car.__dataclass_fields__['name'].type) is False
+    assert _is_optional(Car.__dataclass_fields__['usage'].type) is True
+    assert _is_optional(Car.__dataclass_fields__['cost'].type) is False
 
     car = Car(name="name", usage=10)
     assert isinstance(car, Car)
