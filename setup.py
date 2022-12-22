@@ -21,7 +21,7 @@ def read_requirements(filename):
 
 
 setuptools.setup(
-    name='data_snack',
+    name='data_snack_dynamic_entity',
     test_suite='tests',
     install_requires=read_requirements('requirements.txt'),
     entry_points={}
