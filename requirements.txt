@@ -1,1 +1,3 @@
-data-snack==0.0.7
+data-snack>=0.0.7
+jsonschema>=4.17.3
+
