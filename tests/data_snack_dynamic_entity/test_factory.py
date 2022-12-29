@@ -1,6 +1,6 @@
-from typing import Dict, Type, Union, get_origin, get_args
-
+import pytest
 from data_snack_dynamic_entity import load_entities
+from typing import Dict, Type, Union, get_origin, get_args
 
 
 def _is_optional(field_type: Type) -> bool:
@@ -21,10 +21,10 @@ def test_load_entities(entity_templates: Dict) -> None:
 
     assert len(entities) == 1
 
-    Car = entities['Car']
-    assert _is_optional(Car.__dataclass_fields__['name'].type) is False
-    assert _is_optional(Car.__dataclass_fields__['usage'].type) is True
-    assert _is_optional(Car.__dataclass_fields__['cost'].type) is False
+    Car = entities["Car"]
+    assert _is_optional(Car.__dataclass_fields__["name"].type) is False
+    assert _is_optional(Car.__dataclass_fields__["usage"].type) is True
+    assert _is_optional(Car.__dataclass_fields__["cost"].type) is False
 
     car = Car(name="name", usage=10)
     assert isinstance(car, Car)
@@ -46,3 +46,24 @@ def test_load_entities_many(entity_templates_many: Dict) -> None:
 
         obj = Entity(name="test")
         assert isinstance(obj, Entity)
+
+
+@pytest.fixture
+def entity_templates_wrong_field_type() -> Dict:
+    return {
+        "Car": {
+            "properties": {
+                "name": {"type": "string"},
+            }
+        }
+    }
+
+
+def test_load_entities_wrong_field_type(
+    entity_templates_wrong_field_type: Dict,
+) -> None:
+    """
+    Testing if using a wrong field type will raise an error
+    """
+    with pytest.raises(ValueError):
+        load_entities(entity_templates_wrong_field_type)

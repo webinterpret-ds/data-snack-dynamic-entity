@@ -16,14 +16,14 @@ def read_file(filename):
 
 
 def read_requirements(filename):
-    contents = read_file(filename).strip('\n')
-    return contents.split('\n') if contents else []
+    contents = read_file(filename).strip("\n")
+    return contents.split("\n") if contents else []
 
 
 setuptools.setup(
-    name='data_snack_dynamic_entity',
-    test_suite='tests',
+    name="data_snack_dynamic_entity",
+    test_suite="tests",
     include_package_data=True,
-    install_requires=read_requirements('requirements.txt'),
-    entry_points={}
+    install_requires=read_requirements("requirements.txt"),
+    entry_points={},
 )

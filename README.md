@@ -31,7 +31,7 @@ The template is defined using following schema: `src/data_snack_dynamic_entity/e
     "Car": {
         "properties": {
             "name": {
-                "type": "string"
+                "type": "str"
             },
             "cost": {
                 "type": "float",

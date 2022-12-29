@@ -8,7 +8,7 @@
         "properties": {
           "type": "object",
           "patternProperties": {
-            "^[a-zA-Z0-9]+$": {
+            "^[a-zA-Z0-9_]+$": {
               "type": "object",
               "properties": {
                 "type": {
