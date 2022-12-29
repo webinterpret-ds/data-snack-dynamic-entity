@@ -1,17 +1,20 @@
 import pytest
 from typing import Dict
 
-from src.data_snack_dynamic_entity.validate import validate_entity_templates, ValidationError
+from src.data_snack_dynamic_entity.validate import (
+    validate_entity_templates,
+    ValidationError,
+)
 
 
 @pytest.fixture
 def entity_templates_wrong_fields() -> Dict:
     return {
-        'Car': {
-            'properties': {
-                'name': {},
-                'usage': {'typo': 'int'},
-                'cost': {'type': 'float', 'default': {}}
+        "Car": {
+            "properties": {
+                "name": {},
+                "usage": {"typo": "int"},
+                "cost": {"type": "float", "default": {}},
             }
         }
     }
@@ -19,9 +22,7 @@ def entity_templates_wrong_fields() -> Dict:
 
 @pytest.fixture
 def entity_templates_no_properties() -> Dict:
-    return {
-        'Car': {}
-    }
+    return {"Car": {}}
 
 
 def test_validate_correct_template(entity_templates: Dict) -> None:

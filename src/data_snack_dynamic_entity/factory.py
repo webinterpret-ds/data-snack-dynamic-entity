@@ -14,12 +14,14 @@ def _gettype(name: Text) -> Type:
 
 def _create_entity(entity_name: Text, entity_schema: Dict) -> Entity:
     fields = []
-    for field_name, field_schema in entity_schema['properties'].items():
-        field_type = _gettype(field_schema['type'])
-        if field_schema.get('optional'):
+    for field_name, field_schema in entity_schema["properties"].items():
+        field_type = _gettype(field_schema["type"])
+        if field_schema.get("optional"):
             field_type = Optional[field_type]
-        if 'default' in field_schema:
-            fields.append((field_name, field_type, field(default=field_schema['default'])))
+        if "default" in field_schema:
+            fields.append(
+                (field_name, field_type, field(default=field_schema["default"]))
+            )
         else:
             fields.append((field_name, field_type))
     return make_dataclass(entity_name, fields, bases=(Entity,))

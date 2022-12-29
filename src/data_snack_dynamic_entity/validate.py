@@ -3,7 +3,9 @@ from jsonschema import Draft7Validator
 from pathlib import Path
 from typing import Dict
 
-_SCHEMA = json.load(open(Path(__file__).resolve().parent / "./entityTemplates.schema.json"))
+_SCHEMA = json.load(
+    open(Path(__file__).resolve().parent / "./entityTemplates.schema.json")
+)
 
 
 class ValidationError(Exception):
