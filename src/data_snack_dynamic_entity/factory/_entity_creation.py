@@ -33,6 +33,7 @@ def _create_entity(entity_name: str, entity_schema: EntitySchema, field_validato
     :return: new entity type
     """
     fields = []
+    fields_with_defaults = []
     keys = []
     excluded_fields = []
     for field_name, field_schema in entity_schema["properties"].items():
@@ -46,11 +47,13 @@ def _create_entity(entity_name: str, entity_schema: EntitySchema, field_validato
         if field_schema.get("optional"):
             field_type = Optional[field_type]
         if "default" in field_schema:
-            fields.append((field_name, field_type, field(default=field_schema["default"])))
+            fields_with_defaults.append((field_name, field_type, field(default=field_schema["default"])))
         else:
             fields.append((field_name, field_type))
 
     entity_template = _create_entity_template(entity_name=entity_name, keys=keys, excluded_fields=excluded_fields)
-    return make_dataclass(entity_name, fields, bases=(entity_template,), namespace={"__module__": __name__})
+    return make_dataclass(
+        entity_name, fields + fields_with_defaults, bases=(entity_template,), namespace={"__module__": __name__}
+    )
 
 
