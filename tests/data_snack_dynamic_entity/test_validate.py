@@ -59,3 +59,35 @@ def test_validate_template_no_properties(entity_templates_no_properties: Dict) -
     """
     with pytest.raises(ValidationError):
         validate_entity_templates(entity_templates_no_properties)
+
+
+@pytest.mark.parametrize("dependent_field", ["optional", "excluded", "default"])
+def test_validate_template_key_dependent_fields(dependent_field) -> None:
+    """
+    Tests if validation will fail if a template contains `key` = `True` and invalid dependent fields.
+    """
+    schema = {
+        "Car": {
+            "properties": {
+                "index": {"key": True, dependent_field: True}
+            }
+        }
+    }
+    with pytest.raises(ValidationError):
+        validate_entity_templates(schema)
+
+
+@pytest.mark.parametrize("field_name", ["key", "optional", "excluded"],)
+def test_validate_template_booleans(field_name) -> None:
+    """
+    Tests if validation will fail if a template contains fields does not follow boolean type directive.
+    """
+    schema = {
+        "Car": {
+            "properties": {
+                "index": {field_name: "not_bool"}
+            }
+        }
+    }
+    with pytest.raises(ValidationError):
+        validate_entity_templates(schema)

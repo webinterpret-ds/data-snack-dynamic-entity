@@ -1,7 +1,8 @@
 import json
 from jsonschema import Draft7Validator
 from pathlib import Path
-from typing import Dict
+
+from data_snack_dynamic_entity.types import EntityTemplates
 
 _SCHEMA = json.load(
     open(Path(__file__).resolve().parent / "./entityTemplates.schema.json")
@@ -12,7 +13,7 @@ class ValidationError(Exception):
     ...
 
 
-def validate_entity_templates(templates: Dict) -> None:
+def validate_entity_templates(templates: EntityTemplates) -> None:
     """
     Validates if provided templates config follows the right schema.
 
