@@ -1,12 +1,9 @@
 from dataclasses import field, make_dataclass
-from typing import Type, List, Optional, Callable
+from typing import Type, List, Optional
 
 from data_snack.entities import Entity
 
 from data_snack_dynamic_entity.types import EntitySchema, FieldSchema
-
-
-FieldValidator = Callable[[str, FieldSchema], None]
 
 
 def _gettype(name: str) -> Type:
@@ -24,12 +21,11 @@ def _create_entity_template(entity_name: str, keys: List[str], excluded_fields: 
     )
 
 
-def _create_entity(entity_name: str, entity_schema: EntitySchema, field_validators: List[FieldValidator]) -> Type:
+def _create_entity(entity_name: str, entity_schema: EntitySchema) -> Type:
     """
     Creates entity of given name according to given schema.
     :param entity_name: new entity name
     :param entity_schema: new entity schema
-    :param field_validators: validators to apply on each entity schema field
     :return: new entity type
     """
     fields = []
@@ -37,7 +33,6 @@ def _create_entity(entity_name: str, entity_schema: EntitySchema, field_validato
     keys = []
     excluded_fields = []
     for field_name, field_schema in entity_schema["properties"].items():
-        [validator(field_name, field_schema) for validator in field_validators]
         field_type = _gettype(field_schema["type"])
 
         if field_schema.get("key"):

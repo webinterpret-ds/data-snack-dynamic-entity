@@ -1,8 +1,7 @@
-import pytest
 from data_snack.entities import Entity
 
 from data_snack_dynamic_entity import load_entities
-from typing import Type, Union, get_origin, get_args
+from typing import Type, Union, get_origin, get_args, get_type_hints
 
 from data_snack_dynamic_entity.types import EntityTemplates
 
@@ -52,25 +51,42 @@ def test_load_entities_many(entity_templates_many: EntityTemplates) -> None:
         assert isinstance(obj, Entity)
 
 
-def test_load_entities_wrong_field_type() -> None:
-    """Testing if using a wrong field type will raise an error."""
-    with pytest.raises(ValueError):
-        load_entities({"Car": {"properties": {"name": {"type": "string"}, "index": {"type": "int", "key": True}}}})
+def test_load_entities_default_values() -> None:
+    """
+    Testing if default values of fields are assigned as expected (key = False, optional = False, excluded = False).
+    """
+    schema = {
+        "Car": {
+            "properties": {
+                "index": {"type": "int", "key": True},  # needs to be specified according to `EntityClassMeta`
+                "tested_field": {"type": "int"}  # should have key = False, optional = False, excluded = False
+            }
+        }
+    }
+    entities = load_entities(schema)
+    Car = entities["Car"]
+    assert get_type_hints(Car)["tested_field"] is int
+    assert Car.get_keys() == ["index"]
+    assert not Car.get_excluded_fields()
+    assert Car.get_fields() == ["index", "tested_field"]
 
 
-def test_load_entities_excluded_key() -> None:
-    """Testing if using a field marked as key and excluded will raise an error."""
-    with pytest.raises(ValueError, match=r"Key can not be excluded.$"):
-        load_entities({"Car": {"properties": {"index": {"type": "int", "key": True, "excluded": True}}}})
+def test_load_entities_fields_ordering() -> None:
+    """
+    Testing if fields are properly ordered during creation - the default ones should be at the end due to python syntax
+    limitations. Scenario simplifies to successful entity creation even if fields with defaults are defined before
+    the ones without defaults.
+    """
+    schema = {
+        "Car": {
+            "properties": {
+                "index": {"type": "int", "key": True},
+                "field_with_default": {"type": "int", "default": 10},
+                "field_without_default": {"type": "int"}
+            }
+        }
+    }
+    entities = load_entities(schema)
+    Car = entities["Car"]
+    assert Car
 
-
-def test_load_entities_key_with_default() -> None:
-    """Testing if using a field marked as key with default will raise an error."""
-    with pytest.raises(ValueError, match=r"Key can not have default value."):
-        load_entities({"Car": {"properties": {"index": {"type": "int", "key": True, "default": 1}}}})
-
-
-def test_load_entities_optional_key() -> None:
-    """Testing if using a field marked as key and optional will raise an error."""
-    with pytest.raises(ValueError, match=r"Key can not be optional."):
-        load_entities({"Car": {"properties": {"index": {"type": "int", "key": True, "optional": True}}}})

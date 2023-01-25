@@ -1,4 +1,4 @@
-from typing import TypedDict, Dict, Union
+from typing import TypedDict, Dict, Any
 
 
 class FieldSchema(TypedDict):
@@ -6,7 +6,7 @@ class FieldSchema(TypedDict):
     key: bool
     excluded: bool
     optional: bool
-    default: Union[str, int, float, bool]
+    default: Any
 
 
 class EntitySchema(TypedDict):

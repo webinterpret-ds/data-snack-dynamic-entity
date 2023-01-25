@@ -18,7 +18,31 @@
                   "type": ["string", "number", "boolean"]
                 },
                 "optional": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "default": false
+                },
+                "excluded": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "key": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "if": {
+                  "properties": {
+                    "key": {"const":  true}
+                  },
+                  "required": ["key"],
+                  "not": {
+                    "required": ["default"]
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "optional": {"const": false},
+                    "excluded": {"const":  false}
+                  }
                 }
               },
               "required": [
