@@ -9,44 +9,58 @@
           "type": "object",
           "patternProperties": {
             "^[a-zA-Z0-9_]+$": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string"
-                },
-                "default": {
-                  "type": ["string", "number", "boolean"]
-                },
-                "optional": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "excluded": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "key": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "if": {
+              "anyOf": [
+                {
+                  "type": "object",
                   "properties": {
-                    "key": {"const":  true}
+                    "type": {
+                      "type": "string"
+                    },
+                    "default": {
+                      "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                      ]
+                    },
+                    "key": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "optional": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "excluded": {
+                      "type": "boolean",
+                      "default": false
+                    }
                   },
-                  "required": ["key"],
-                  "not": {
-                    "required": ["default"]
-                  }
+          		  "additionalProperties": false
                 },
-                "then": {
+                {
+                  "type": "object",
                   "properties": {
-                    "optional": {"const": false},
-                    "excluded": {"const":  false}
-                  }
+                    "type": {
+                      "type": "string"
+                    },
+                    "key": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "optional": {
+                      "type": "boolean",
+                      "default": false,
+                      "enum": [false]
+                    },
+                    "excluded": {
+                      "type": "boolean",
+                      "default": false,
+                      "enum": [false]
+                    }
+                  },
+          		  "additionalProperties": false
                 }
-              },
-              "required": [
-              	"type"
               ]
             }
           },

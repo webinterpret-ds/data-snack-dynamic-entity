@@ -2,7 +2,7 @@ from typing import Dict, Type
 
 from data_snack_dynamic_entity.validate import validate_entity_templates
 
-from data_snack_dynamic_entity.factory._entity_creation import _create_entity
+from data_snack_dynamic_entity.factory.entity_creation import _create_entity
 
 from data_snack_dynamic_entity.types import EntityTemplates
 
