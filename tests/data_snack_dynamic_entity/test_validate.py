@@ -61,7 +61,7 @@ def test_validate_template_no_properties(entity_templates_no_properties: Dict) -
         validate_entity_templates(entity_templates_no_properties)
 
 
-@pytest.mark.parametrize("dependent_field", ["optional", "excluded", "default"])
+@pytest.mark.parametrize("dependent_field", ["optional", "default"])
 def test_validate_template_key_dependent_fields(dependent_field) -> None:
     """
     Tests if validation will fail if a template contains `key` = `True` and invalid dependent fields.

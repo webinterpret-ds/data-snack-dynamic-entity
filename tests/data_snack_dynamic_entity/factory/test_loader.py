@@ -90,3 +90,21 @@ def test_load_entities_fields_ordering() -> None:
     Car = entities["Car"]
     assert Car
 
+
+def test_load_entities_excluded_key() -> None:
+    """
+    Testing if key can be excluded
+    """
+    schema = {
+        "Car": {
+            "properties": {
+                "index": {"type": "int", "key": True, "excluded": True},
+                "other_field": {"type": "int"}
+            }
+        }
+    }
+    entities = load_entities(schema)
+    Car = entities["Car"]
+    assert Car.get_keys() == ["index"]
+    assert Car.get_excluded_fields() == ["index"]
+    assert Car.get_fields() == ["other_field"]
