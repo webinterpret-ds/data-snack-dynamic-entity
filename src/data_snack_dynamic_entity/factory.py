@@ -7,10 +7,11 @@ from data_snack_dynamic_entity.types import EntitySchema, FieldSchema, EntityTem
 from data_snack_dynamic_entity.validate import validate_entity_templates
 
 
-
 @dataclass
 class EntityFactory:
-    types_mapping: Dict[str, Any] = field(default_factory=dict)  # this will store custom mappings
+    types_mapping: Dict[str, Any] = field(
+        default_factory=dict
+    )  # this will store custom mappings
 
     def load_entities(self, templates: EntityTemplates) -> Dict[str, Type]:
         """
@@ -48,13 +49,20 @@ class EntityFactory:
             if field_schema.get("optional"):
                 field_type = Optional[field_type]
             if "default" in field_schema:
-                fields_with_defaults.append((field_name, field_type, field(default=field_schema["default"])))
+                fields_with_defaults.append(
+                    (field_name, field_type, field(default=field_schema["default"]))
+                )
             else:
                 fields.append((field_name, field_type))
 
-        entity_template = self._create_entity_template(entity_name=entity_name, keys=keys, excluded_fields=excluded_fields)
+        entity_template = self._create_entity_template(
+            entity_name=entity_name, keys=keys, excluded_fields=excluded_fields
+        )
         return make_dataclass(
-            entity_name, fields + fields_with_defaults, bases=(entity_template,), namespace={"__module__": __name__}
+            entity_name,
+            fields + fields_with_defaults,
+            bases=(entity_template,),
+            namespace={"__module__": __name__},
         )
 
     def _get_entity_type(self, name: str) -> Type:
@@ -69,15 +77,25 @@ class EntityFactory:
             raise ValueError(name) from e
 
     @staticmethod
-    def _create_entity_template(entity_name: str, keys: List[str], excluded_fields: List[str]) -> Type:
+    def _create_entity_template(
+        entity_name: str, keys: List[str], excluded_fields: List[str]
+    ) -> Type:
         return type(
             f"{entity_name}Template",
-            (Entity, ),
-            {"Meta": type("Meta", (object, ), {"keys": keys, "excluded_fields": excluded_fields})}
+            (Entity,),
+            {
+                "Meta": type(
+                    "Meta",
+                    (object,),
+                    {"keys": keys, "excluded_fields": excluded_fields},
+                )
+            },
         )
 
 
-def load_entities(templates: EntityTemplates, types_mapping: Dict[str, Any]=None) -> Dict[str, Type]:
+def load_entities(
+    templates: EntityTemplates, types_mapping: Dict[str, Any] = None
+) -> Dict[str, Type]:
     if not types_mapping:
         types_mapping = {}
     return EntityFactory(types_mapping).load_entities(templates)
