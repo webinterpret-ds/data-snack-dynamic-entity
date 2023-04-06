@@ -57,7 +57,7 @@ def test__entity_factory__load_entities(
     assert car.cost == 10.0
 
 
-def test_entity_factory__load_entities_many(
+def test__entity_factory__load_entities_many(
         entity_factory: EntityFactory, entity_templates_many: EntityTemplates
 ) -> None:
     """Testing if `load_entities` works correctly if more than one Entity is defined in the template."""
@@ -69,6 +69,21 @@ def test_entity_factory__load_entities_many(
 
         obj = entity(index=1, name="test")
         assert isinstance(obj, Entity)
+
+
+def test__entity_factory__wrong_builtin_type(
+        entity_factory: EntityFactory
+) -> None:
+    """Testing if `load_entities` works correctly if more than one Entity is defined in the template."""
+    schema = {
+        "Car": {
+            "properties": {
+                "index": {"type": "next"},  # needs to be specified according to `EntityClassMeta`
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        entity_factory.load_entities(schema)
 
 
 def test__entity_factory__load_entities_default_values(
@@ -160,6 +175,16 @@ def test__load_entities__passing_types_mapping(
     types_mapping = {"numpy.float16": np.float16}
     load_entities(entity_templates, types_mapping)
     entity_factory_mock.assert_called_with(types_mapping)
+
+
+@patch('data_snack_dynamic_entity.factory.EntityFactory')
+def test__load_entities__default_types_mapping(
+        entity_factory_mock: MagicMock,
+        entity_templates: EntityTemplates
+):
+    load_entities(entity_templates)
+    entity_factory_mock.assert_called_with({})
+
 
 
 @patch('data_snack_dynamic_entity.factory.EntityFactory.load_entities')

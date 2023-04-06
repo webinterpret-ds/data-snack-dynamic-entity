@@ -1,17 +1,11 @@
+import builtins
 from data_snack.entities import Entity
 from dataclasses import dataclass, field, make_dataclass
-from typing import Dict, Type, Any, Type, List, Optional
+from typing import Dict, Type, Any, List, Optional
 
 from data_snack_dynamic_entity.types import EntitySchema, FieldSchema, EntityTemplates
 from data_snack_dynamic_entity.validate import validate_entity_templates
 
-
-def _create_entity_template(entity_name: str, keys: List[str], excluded_fields: List[str]) -> Type:
-    return type(
-        f"{entity_name}Template",
-        (Entity, ),
-        {"Meta": type("Meta", (object, ), {"keys": keys, "excluded_fields": excluded_fields})}
-    )
 
 
 @dataclass
@@ -58,18 +52,29 @@ class EntityFactory:
             else:
                 fields.append((field_name, field_type))
 
-        entity_template = _create_entity_template(entity_name=entity_name, keys=keys, excluded_fields=excluded_fields)
+        entity_template = self._create_entity_template(entity_name=entity_name, keys=keys, excluded_fields=excluded_fields)
         return make_dataclass(
             entity_name, fields + fields_with_defaults, bases=(entity_template,), namespace={"__module__": __name__}
         )
 
     def _get_entity_type(self, name: str) -> Type:
-        t = __builtins__.get(name)
-        if isinstance(t, type):
+        try:
+            t = getattr(builtins, name)
+            if not isinstance(t, type):
+                raise ValueError(name)
             return t
-        elif t := self.types_mapping.get(name):
-            return t
-        raise ValueError(name)
+        except AttributeError as e:
+            if t := self.types_mapping.get(name):
+                return t
+            raise ValueError(name) from e
+
+    @staticmethod
+    def _create_entity_template(entity_name: str, keys: List[str], excluded_fields: List[str]) -> Type:
+        return type(
+            f"{entity_name}Template",
+            (Entity, ),
+            {"Meta": type("Meta", (object, ), {"keys": keys, "excluded_fields": excluded_fields})}
+        )
 
 
 def load_entities(templates: EntityTemplates, types_mapping: Dict[str, Any]=None) -> Dict[str, Type]:
