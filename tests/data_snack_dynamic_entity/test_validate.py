@@ -11,6 +11,7 @@ from src.data_snack_dynamic_entity.validate import (
 def entity_templates_wrong_fields() -> Dict:
     return {
         "Car": {
+            "version": 1,
             "properties": {
                 "name": {},
                 "usage": {"typo": "int"},
@@ -23,6 +24,19 @@ def entity_templates_wrong_fields() -> Dict:
 @pytest.fixture
 def entity_templates_no_properties() -> Dict:
     return {"Car": {}}
+
+
+@pytest.fixture
+def entity_templates_no_version() -> Dict:
+    return {
+        "Car": {
+            "properties": {
+                "name": {},
+                "usage": {"typo": "int"},
+                "cost": {"type": "float", "default": {}},
+            }
+        }
+    }
 
 
 def test_validate_correct_template(entity_templates: Dict) -> None:
@@ -68,6 +82,7 @@ def test_validate_template_key_dependent_fields(dependent_field) -> None:
     """
     schema = {
         "Car": {
+            "version": 1,
             "properties": {
                 "index": {"key": True, dependent_field: True}
             }
@@ -84,6 +99,7 @@ def test_validate_template_booleans(field_name) -> None:
     """
     schema = {
         "Car": {
+            "version": 1,
             "properties": {
                 "index": {field_name: "not_bool"}
             }
@@ -91,3 +107,11 @@ def test_validate_template_booleans(field_name) -> None:
     }
     with pytest.raises(ValidationError):
         validate_entity_templates(schema)
+
+
+def test_validate_version(entity_templates_no_version: Dict) -> None:
+    """
+    Tests if validation will fail if a template doesn't contain a version.
+    """
+    with pytest.raises(ValidationError):
+        validate_entity_templates(entity_templates_no_version)

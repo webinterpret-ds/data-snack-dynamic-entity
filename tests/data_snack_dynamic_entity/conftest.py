@@ -6,6 +6,7 @@ from typing import Dict
 def entity_templates() -> Dict:
     return {
         "Car": {
+            "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True},
                 "excluded": {"type": "int", "excluded": True},
@@ -21,12 +22,14 @@ def entity_templates() -> Dict:
 def entity_templates_many() -> Dict:
     return {
         "Cat": {
+            "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True},
                 "name": {"type": "str"},
             }
         },
         "Dog": {
+            "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True},
                 "name": {"type": "str"},
