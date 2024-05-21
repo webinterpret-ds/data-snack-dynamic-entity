@@ -56,7 +56,7 @@ class EntityFactory:
                 fields.append((field_name, field_type))
 
         entity_template = self._create_entity_template(
-            entity_name=entity_name, keys=keys, excluded_fields=excluded_fields
+            entity_name=entity_name, keys=keys, excluded_fields=excluded_fields, version=entity_schema["version"]
         )
         return make_dataclass(
             entity_name,
@@ -78,7 +78,7 @@ class EntityFactory:
 
     @staticmethod
     def _create_entity_template(
-        entity_name: str, keys: List[str], excluded_fields: List[str]
+        entity_name: str, keys: List[str], excluded_fields: List[str], version: int
     ) -> Type:
         return type(
             f"{entity_name}Template",
@@ -87,7 +87,7 @@ class EntityFactory:
                 "Meta": type(
                     "Meta",
                     (object,),
-                    {"keys": keys, "excluded_fields": excluded_fields},
+                    {"keys": keys, "excluded_fields": excluded_fields, "version": version},
                 )
             },
         )

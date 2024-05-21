@@ -5,6 +5,9 @@
     "^[A-Z][a-zA-Z0-9]*$": {
       "type": "object",
       "properties": {
+        "version": {
+          "type": "integer"
+        },
         "properties": {
           "type": "object",
           "patternProperties": {
@@ -68,7 +71,8 @@
         }
       },
       "required": [
-        "properties"
+        "properties",
+        "version"
       ]
     }
   },

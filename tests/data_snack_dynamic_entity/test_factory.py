@@ -52,6 +52,7 @@ def test__entity_factory__load_entities(
     assert car.cost == 0.0
     assert car.Meta.keys == ["index"]
     assert car.Meta.excluded_fields == ["excluded"]
+    assert car.Meta.version == 1
 
     car = Car(index=1, excluded=2, name="name", usage=10, cost=10.0)
     assert car.cost == 10.0
@@ -77,6 +78,7 @@ def test__entity_factory__wrong_builtin_type(
     """Testing if `load_entities` works correctly if more than one Entity is defined in the template."""
     schema = {
         "Car": {
+            "version": 1,
             "properties": {
                 "index": {"type": "next"},  # needs to be specified according to `EntityClassMeta`
             }
@@ -94,6 +96,7 @@ def test__entity_factory__load_entities_default_values(
     """
     schema = {
         "Car": {
+            "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True},  # needs to be specified according to `EntityClassMeta`
                 "tested_field": {"type": "int"}  # should have key = False, optional = False, excluded = False
@@ -116,6 +119,7 @@ def test__entity_factory__load_entities_fields_ordering(entity_factory: EntityFa
     """
     schema = {
         "Car": {
+            "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True},
                 "field_with_default": {"type": "int", "default": 10},
@@ -134,6 +138,7 @@ def test__entity_factory__load_entities_excluded_key(entity_factory) -> None:
     """
     schema = {
         "Car": {
+            "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True, "excluded": True},
                 "other_field": {"type": "int"}
@@ -153,6 +158,7 @@ def test__entity_factory__load_entities_with_types_mappings(entity_factory_with_
     """
     schema = {
         "Car": {
+            "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True, "excluded": True},
                 "numpy_field": {"type": "numpy.float16"}
