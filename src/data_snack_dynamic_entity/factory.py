@@ -9,10 +9,13 @@ from data_snack_dynamic_entity.types import EntityTemplates
 
 
 def split_templates_by_type(templates: EntityTemplates) -> Tuple[SimpleEntityTemplates, CompoundEntityTemplates]:
-    templates_types = defaultdict(dict)
+    simple_entities, compound_entities = {}, {}
     for entity_name, entity_schema in templates.items():
-        templates_types[entity_schema["type"]].update({entity_name: entity_schema})
-    return templates_types["simple"], templates_types["compound"]
+        if entity_schema["type"] == "simple":
+            simple_entities[entity_name] = entity_schema
+        elif entity_schema["type"] == "compound":
+            compound_entities[entity_name] = entity_schema
+    return simple_entities, compound_entities
 
 
 def load_entities(templates: EntityTemplates, types_mapping: Dict[str, Any] = None) -> Dict[str, Type]:
