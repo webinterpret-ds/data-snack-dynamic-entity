@@ -1,17 +1,6 @@
-from typing import TypedDict, Dict, Any
+from typing import Dict, Union
 
+from data_snack_dynamic_entity.compound_entity.types import CompoundEntitySchema
+from data_snack_dynamic_entity.simple_entity.types import SimpleEntitySchema
 
-class FieldSchema(TypedDict):
-    type: str
-    key: bool
-    excluded: bool
-    optional: bool
-    default: Any
-
-
-class EntitySchema(TypedDict):
-    properties: Dict[str, FieldSchema]
-    version: int
-
-
-EntityTemplates = Dict[str, EntitySchema]
+EntityTemplates = Dict[str, Union[SimpleEntitySchema, CompoundEntitySchema]]
