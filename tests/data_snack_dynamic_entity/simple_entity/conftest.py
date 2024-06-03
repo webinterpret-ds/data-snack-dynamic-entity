@@ -3,9 +3,10 @@ from typing import Dict
 
 
 @pytest.fixture
-def entity_templates() -> Dict:
+def simple_entity_templates() -> Dict:
     return {
         "Car": {
+            "type": "simple",
             "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True},
@@ -19,9 +20,10 @@ def entity_templates() -> Dict:
 
 
 @pytest.fixture
-def entity_templates_many() -> Dict:
+def simple_entity_templates_many() -> Dict:
     return {
         "Cat": {
+            "type": "simple",
             "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True},
@@ -29,6 +31,7 @@ def entity_templates_many() -> Dict:
             }
         },
         "Dog": {
+            "type": "simple",
             "version": 1,
             "properties": {
                 "index": {"type": "int", "key": True},

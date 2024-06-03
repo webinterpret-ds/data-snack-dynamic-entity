@@ -1,101 +1,26 @@
-import builtins
-from data_snack.entities import Entity
-from dataclasses import dataclass, field, make_dataclass
-from typing import Dict, Type, Any, List, Optional
+from collections import defaultdict
+from typing import Dict, Any, Type, Tuple
 
-from data_snack_dynamic_entity.types import EntitySchema, FieldSchema, EntityTemplates
-from data_snack_dynamic_entity.validate import validate_entity_templates
-
-
-@dataclass
-class EntityFactory:
-    types_mapping: Dict[str, Any] = field(
-        default_factory=dict
-    )  # this will store custom mappings
-
-    def load_entities(self, templates: EntityTemplates) -> Dict[str, Type]:
-        """
-        Creates new Entity types based on provided config.
-        Config should contain a valid template that is created according to the schema (see README).
-
-        :param templates: input config containing templates
-        :returns: a dictionary with all created Entity types
-        """
-
-        validate_entity_templates(templates)
-        return {
-            entity_name: self._create_entity(entity_name, entity_schema)
-            for entity_name, entity_schema in templates.items()
-        }
-
-    def _create_entity(self, entity_name: str, entity_schema: EntitySchema) -> Type:
-        """
-        Creates entity of given name according to given schema.
-        :param entity_name: new entity name
-        :param entity_schema: new entity schema
-        :return: new entity type
-        """
-        fields = []
-        fields_with_defaults = []
-        keys = []
-        excluded_fields = []
-        for field_name, field_schema in entity_schema["properties"].items():
-            field_type = self._get_entity_type(field_schema["type"])
-
-            if field_schema.get("key"):
-                keys.append(field_name)
-            if field_schema.get("excluded"):
-                excluded_fields.append(field_name)
-            if field_schema.get("optional"):
-                field_type = Optional[field_type]
-            if "default" in field_schema:
-                fields_with_defaults.append(
-                    (field_name, field_type, field(default=field_schema["default"]))
-                )
-            else:
-                fields.append((field_name, field_type))
-
-        entity_template = self._create_entity_template(
-            entity_name=entity_name, keys=keys, excluded_fields=excluded_fields, version=entity_schema["version"]
-        )
-        return make_dataclass(
-            entity_name,
-            fields + fields_with_defaults,
-            bases=(entity_template,),
-            namespace={"__module__": __name__},
-        )
-
-    def _get_entity_type(self, name: str) -> Type:
-        try:
-            t = getattr(builtins, name)
-            if not isinstance(t, type):
-                raise ValueError(name)
-            return t
-        except AttributeError as e:
-            if t := self.types_mapping.get(name):
-                return t
-            raise ValueError(name) from e
-
-    @staticmethod
-    def _create_entity_template(
-        entity_name: str, keys: List[str], excluded_fields: List[str], version: int
-    ) -> Type:
-        return type(
-            f"{entity_name}Template",
-            (Entity,),
-            {
-                "Meta": type(
-                    "Meta",
-                    (object,),
-                    {"keys": keys, "excluded_fields": excluded_fields, "version": version},
-                )
-            },
-        )
+from data_snack_dynamic_entity.compound_entity.factory import CompoundEntityFactory
+from data_snack_dynamic_entity.compound_entity.types import CompoundEntityTemplates
+from data_snack_dynamic_entity.simple_entity.factory import SimpleEntityFactory
+from data_snack_dynamic_entity.simple_entity.types import SimpleEntityTemplates
+from data_snack_dynamic_entity.types import EntityTemplates
 
 
-def load_entities(
-    templates: EntityTemplates, types_mapping: Dict[str, Any] = None
-) -> Dict[str, Type]:
+def split_templates_by_type(templates: EntityTemplates) -> Tuple[SimpleEntityTemplates, CompoundEntityTemplates]:
+    templates_types = defaultdict(dict)
+    for entity_name, entity_schema in templates.items():
+        templates_types[entity_schema["type"]].update({entity_name: entity_schema})
+    return templates_types["simple"], templates_types["compound"]
+
+
+def load_entities(templates: EntityTemplates, types_mapping: Dict[str, Any] = None) -> Dict[str, Type]:
     if not types_mapping:
         types_mapping = {}
-    return EntityFactory(types_mapping).load_entities(templates)
+
+    simple_entities_templates, compound_entities_templates = split_templates_by_type(templates)
+    simple_entities = SimpleEntityFactory(types_mapping).load_entities(simple_entities_templates)
+    compound_entities = CompoundEntityFactory().load_entities(compound_entities_templates, simple_entities)
+    return {**simple_entities, **compound_entities}
+
