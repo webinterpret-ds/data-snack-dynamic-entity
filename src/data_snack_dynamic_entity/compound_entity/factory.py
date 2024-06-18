@@ -83,8 +83,8 @@ class CompoundEntityFactory:
         source_fields_mapping = create_source_entity_field_mappings(entity_schema)
         sources = create_source_entities(source_entities, source_fields_mapping)
 
-        fields = []
-        fields_with_defaults = []
+        fields = set()
+        fields_with_defaults = set()
         for source in sources:
             for entity_field, source_field in source.fields_mapping.items():
                 try:
@@ -94,14 +94,14 @@ class CompoundEntityFactory:
                         f"Source entity {source.entity.__name__} field {e.args[0]} does not exist."
                     )
                 if isinstance(class_field.default, type(MISSING)):
-                    fields.append((entity_field, class_field.type))
+                    fields.add((entity_field, class_field.type))
                 else:
-                    fields_with_defaults.append((entity_field, class_field.type, field(default=class_field.default)))
+                    fields_with_defaults.add((entity_field, class_field.type, field(default=class_field.default)))
 
         entity_template = self._create_compound_entity_template(entity_name=entity_name, sources=sources)
         return make_dataclass(
             entity_name,
-            fields + fields_with_defaults,
+            list(fields) + list(fields_with_defaults),
             bases=(entity_template,),
             namespace={"__module__": __name__},
         )

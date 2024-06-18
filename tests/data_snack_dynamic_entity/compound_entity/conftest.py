@@ -18,12 +18,13 @@ class Car(Entity):
 
 
 @dataclass
-class Person(Entity):
+class CarOwner(Entity):
     index: str
+    car_index: str
     name: Optional[str] = field(default=None)
 
     class Meta:
-        keys: List[str] = ["index"]
+        keys: List[str] = ["index", "car_index"]
         excluded_fields: List[str] = []
         version = 1
 
@@ -32,7 +33,7 @@ class Person(Entity):
 def source_entities() -> Dict[str, Type]:
     return {
         "Car": Car,
-        "Person": Person,
+        "CarOwner": CarOwner,
     }
 
 
@@ -56,11 +57,15 @@ def compound_entity_templates() -> Dict:
                     ]
                 },
                 {
-                    "entity": "Person",
+                    "entity": "CarOwner",
                     "fields": [
                         {
                             "field": "person_index",
                             "source_field": "index",
+                        },
+                        {
+                            "field": "car_index",
+                            "source_field": "car_index",
                         },
                         {
                             "field": "name",
