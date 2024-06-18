@@ -10,7 +10,7 @@ from data_snack_dynamic_entity.compound_entity.factory import CompoundEntityFact
 from data_snack_dynamic_entity.compound_entity.types import CompoundEntityTemplates
 from data_snack_dynamic_entity.compound_entity.exceptions import NonExistingSourceEntityException
 from data_snack_dynamic_entity.factory import load_entities
-from tests.data_snack_dynamic_entity.compound_entity.conftest import Car, Person
+from tests.data_snack_dynamic_entity.compound_entity.conftest import Car, CarOwner
 from tests.data_snack_dynamic_entity.utils import _is_optional
 
 
@@ -59,15 +59,16 @@ def test__compound_entity_factory__load_sources_entities(
 
     assert len(Registration.Meta.sources) == 2
     assert type(Registration.Meta.sources[0].entity) == type(Car)
-    assert type(Registration.Meta.sources[1].entity) == type(Person)
+    assert type(Registration.Meta.sources[1].entity) == type(CarOwner)
 
     assert len(Registration.Meta.sources[0].entity_fields_mapping) == 2
     assert Registration.Meta.sources[0].entity_fields_mapping[0] == EntityFieldMapping("car_index", "index")
     assert Registration.Meta.sources[0].entity_fields_mapping[1] == EntityFieldMapping("brand", "brand")
 
-    assert len(Registration.Meta.sources[1].entity_fields_mapping) == 2
+    assert len(Registration.Meta.sources[1].entity_fields_mapping) == 3
     assert Registration.Meta.sources[1].entity_fields_mapping[0] == EntityFieldMapping("person_index", "index")
-    assert Registration.Meta.sources[1].entity_fields_mapping[1] == EntityFieldMapping("name", "name")
+    assert Registration.Meta.sources[1].entity_fields_mapping[1] == EntityFieldMapping("car_index", "car_index")
+    assert Registration.Meta.sources[1].entity_fields_mapping[2] == EntityFieldMapping("name", "name")
 
 
 def test__compound_entity_factory__load_non_existing_source_entity(
