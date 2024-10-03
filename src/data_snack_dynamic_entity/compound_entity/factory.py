@@ -10,42 +10,27 @@ from data_snack_dynamic_entity.compound_entity.types import CompoundEntitySchema
 from data_snack_dynamic_entity.validate import validate_entity_templates
 
 
-def create_source_entity_field_mappings(entity_schema: CompoundEntitySchema) -> Dict[str, List[EntityFieldMapping]]:
+def create_source_entities(source_entities: Dict[str, Type], entity_schema: CompoundEntitySchema) -> List[SourceEntity]:
     """
-    Creates source entity field mappings according to given schema.
-
-    :param entity_schema: new entity schema
-    :returns: source and new entity field mappings
-    """
-    return {
-        source["entity"]: [
-            EntityFieldMapping(
-                field=field_mapping["field"],
-                source_field=field_mapping["source_field"]
-            )
-            for field_mapping in source["fields"]
-        ]
-        for source in entity_schema["sources"]
-    }
-
-
-def create_source_entities(
-        source_entities: Dict[str, Type], source_entities_fields_mapping: Dict[str, List[EntityFieldMapping]]
-) -> List[SourceEntity]:
-    """
-    Creates source entities according to source entity field mappings.
+    Creates source entities with fields mapping according to given schema.
 
     :param source_entities: source entity objects
-    :param source_entities_fields_mapping: source entity field mappings
+    :param entity_schema: new entity schema
     :returns: source entities for new entity
     """
     try:
         sources = [
             SourceEntity(
-                entity=source_entities[entity],
-                entity_fields_mapping=fields_mapping,
+                entity=source_entities[source["entity"]],
+                entity_fields_mapping=[
+                    EntityFieldMapping(
+                        field=field_mapping["field"],
+                        source_field=field_mapping["source_field"]
+                    )
+                    for field_mapping in source["fields"]
+                ]
             )
-            for entity, fields_mapping in source_entities_fields_mapping.items()
+            for source in entity_schema["sources"]
         ]
     except KeyError as e:
         raise NonExistingSourceEntityException(f"Source entity {e.args[0]} does not exist")
@@ -80,8 +65,7 @@ class CompoundEntityFactory:
         :param source_entities: a dictionary with all source Entity types
         :return: new entity type
         """
-        source_fields_mapping = create_source_entity_field_mappings(entity_schema)
-        sources = create_source_entities(source_entities, source_fields_mapping)
+        sources = create_source_entities(source_entities, entity_schema)
 
         fields = set()
         fields_with_defaults = set()
