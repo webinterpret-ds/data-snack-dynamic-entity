@@ -1,4 +1,3 @@
-from collections import defaultdict
 from typing import Dict, Any, Type, Tuple
 
 from data_snack_dynamic_entity.compound_entity.factory import CompoundEntityFactory

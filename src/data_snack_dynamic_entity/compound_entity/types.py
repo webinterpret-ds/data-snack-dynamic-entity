@@ -9,6 +9,7 @@ class SourceEntityFieldSchema(TypedDict):
 class SourceEntitySchema(TypedDict):
     entity: str
     fields: List[SourceEntityFieldSchema]
+    optional: bool
 
 
 class CompoundEntitySchema(TypedDict):
