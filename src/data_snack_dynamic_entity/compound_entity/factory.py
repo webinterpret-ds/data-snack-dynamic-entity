@@ -28,7 +28,8 @@ def create_source_entities(source_entities: Dict[str, Type], entity_schema: Comp
                         source_field=field_mapping["source_field"]
                     )
                     for field_mapping in source["fields"]
-                ]
+                ],
+                optional=source.get("optional", False)
             )
             for source in entity_schema["sources"]
         ]

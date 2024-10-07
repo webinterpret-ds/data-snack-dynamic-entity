@@ -70,6 +70,9 @@ def test__compound_entity_factory__load_sources_entities(
     assert Registration.Meta.sources[1].entity_fields_mapping[1] == EntityFieldMapping("car_index", "car_index")
     assert Registration.Meta.sources[1].entity_fields_mapping[2] == EntityFieldMapping("name", "name")
 
+    assert Registration.Meta.sources[0].optional == False
+    assert Registration.Meta.sources[1].optional == True
+
 
 def test__compound_entity_factory__load_non_existing_source_entity(
         compound_entity_factory: CompoundEntityFactory, source_entities: Dict[str, Type]
