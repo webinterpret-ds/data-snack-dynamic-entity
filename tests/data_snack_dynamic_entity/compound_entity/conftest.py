@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 import pytest
 from typing import Dict, List, Optional, Type
 
-from attr.validators import optional
 from data_snack.entities import Entity
 
 
